@@ -3,8 +3,24 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-$app->get('/', App\Action\HomeAction::class)
-    ->setName('homepage');
+$app->get('/', function (Request $request, Response $response, array $args)
+{
+    if (!$this->session->user)
+    {
+        return $response->withRedirect('/login', 302);
+    }
+    else if ($this->session->user['tenant'])
+    {
+        $sql = "SELECT ";
+        $this->logger->debug('tenant_id' . $this->session->user['tenant']);
+        return $this->view->render($response, 'home_tenant.html');
+    }
+    else
+    {
+        return $this->view->render($response, 'home_owner.html');
+    }
+    
+})->setName('homepage');
 
 $app->group('/api', function ($app) {
     $app->get('/logger', App\Action\ApiAction::class . ':index');
@@ -28,21 +44,25 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 
 $app->post('/login', function (Request $request, Response $response, array $args){
     $username = $request->getParsedBodyParam('username');
+    $password = $request->getParsedBodyParam('password');
     $next = $request->getParsedBodyParam('next');
     $next = in_array($next, array('', '/login', '/logout')) ? '/' : $next; 
     $stmt = $this->db->prepare("SELECT * FROM users WHERE username=:username");
     $stmt->execute([':username' => $username]);
+    $user = $stmt->fetch();
     $this->logger->debug('$next = ' . $next);
-    if ($username !== '') {
-        if ($username == 'demo')
+    if ($user && password_verify($password, $user['password'])) {
+        date_default_timezone_set($user['tz']);
+        $tenant = false;
+        if ($user['tenant_id'])
         {
-            date_default_timezone_set("Africa/Accra");
+            $stmt = $this->db->prepare("SELECT * FROM tenant WHERE id=:id");
+            $stmt->execute([":id" => $user['tenant_id']]);
+            $tenant = $stmt->fetch();
         }
-        else
-        {
-            date_default_timezone_set('Asia/Jayapura');
-        }
-        $this->session->user = array('username' => $username, 'tz' => date_default_timezone_get());
+        $this->session->user = array('username' => $username, 
+            'tenant' => $tenant,
+            'tz' => date_default_timezone_get());
         return $response->withRedirect($next, 302);
     }
     else
