@@ -7,7 +7,7 @@ use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class DeviceAction
+final class TenantAction
 {
     private $view;
     private $logger;
@@ -34,7 +34,7 @@ final class DeviceAction
     public function index($request, $response, $args)
     {
         
-        return $this->view->render($response, 'device/index.html', ['logger' => $this->_all()]);
+        return $this->view->render($response, 'tenant/index.html', ['logger' => "Hello"]);
     }
 
     public function show($request, $response, $args)
@@ -42,7 +42,7 @@ final class DeviceAction
         if (! in_array($args['sn'], $this->c['session']['user']['sn'])) {
             return $response->withStatus(404);
         }
-        return $this->view->render($response, 'device/show.html', ['sn' => $args['sn']]);
+        return $this->view->render($response, 'tenant/show.html', ['sn' => $args['sn']]);
     }
 
 }

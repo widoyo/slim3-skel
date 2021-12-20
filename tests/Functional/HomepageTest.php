@@ -19,9 +19,9 @@ class HomepageTest extends BaseTestCase
     /**
      * Test that the index route with optional name argument returns a rendered greeting
      */
-    public function testGetHomepageWithGreeting()
+    public function testGetLogin()
     {
-        $response = $this->runApp('GET', '/name');
+        $response = $this->runApp('GET', '/login');
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('Hello name!', (string)$response->getBody());

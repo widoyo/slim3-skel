@@ -1,4 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>LOgger Index</h1>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Logger Index</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-8">
+      <ul>
+        {% for l in logger %}
+        <li><a href="/logger/{{ l.sn }}">{{ l.sn }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-4">
+      Sini
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block js_foot %}
+<script>
+ {{ logger|json_encode()|raw }}
+</script>
 {% endblock %}

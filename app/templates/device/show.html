@@ -1,4 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Logger Show {{ sn }} {{ user.tz }}</h1>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Logger Show {{ sn }}</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-8">
+      {{ user.tz }}
+    </div>
+    <div class="col-4">
+      Kanan
+    </div>
+  </div>
+</div>
+
 {% endblock %}

@@ -5,19 +5,19 @@ use Slim\Views\Twig;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use PDO;
+use Psr\Container\ContainerInterface;
 
 final class HomeAction
 {
-    private $view;
     private $logger;
     private $db;
+    private $session;
 
-    public function __construct(Twig $view, LoggerInterface $logger, PDO $db)
+    public function __construct(ContainerInterface $container)
     {
-        $this->view = $view;
-        $this->logger = $logger;
-        $this->db = $db;
+        $this->db = $container['db'];
+        $this->logger = $container['logger'];
+        $this->session = $container['session'];
     }
 
     public function __invoke(Request $request, Response $response, $args)
@@ -28,7 +28,7 @@ final class HomeAction
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $count = $stmt->fetch();
-        $this->view->render($response, 'home.html', ['count' => $count['count']]);
+        $this->view->render($response, 'home.html', ['count' => $count['count'], 'homeuser' => $this->session['user']['username']]);
         return $response;
     }
 }
