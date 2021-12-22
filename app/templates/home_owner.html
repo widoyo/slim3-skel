@@ -1,7 +1,22 @@
 {% extends 'base.html' %}
-{% block title %}Your Home{% endblock %}
 {% block content %}
-{% for l in user.sn %}
-{{ l }}
-{% endfor %}
+{% include 'page_head.html' with {'head_title': 'Homepage'} %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <ol>
+                {% for l in logger %}
+                <li>{{ l.device }} {{ l.sampling }}</li>
+                {% endfor %}    
+            </ol>            
+        </div>
+        <div class="col">
+            <ol>
+                {% for t in user.tenant %}
+                <li>A {{ t.nama }}</li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+</div>
 {% endblock %}

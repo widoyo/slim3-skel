@@ -32,6 +32,11 @@ return function(App $app) {
         return new Slim\Flash\Messages;
     };
     
+    $flash = new Twig\TwigFunction('flash', function ($key) use ($container) {
+        return $container->get('flash')->getMessage($key);
+    });
+    $container->get('view')->getEnvironment()->addFunction($flash);
+    
     // -----------------------------------------------------------------------------
     // Service factories
     // -----------------------------------------------------------------------------
@@ -92,5 +97,13 @@ return function(App $app) {
 
     $container[App\Action\TenantAction::class] = function ($c) {
         return new \App\Action\TenantAction($c);
+    };
+
+    $container[App\Action\PosAction::class] = function ($c) {
+        return new \App\Action\PosAction($c);
+    };
+
+    $container[App\Action\DasAction::class] = function ($c) {
+        return new \App\Action\DasAction($c);
     };
 };

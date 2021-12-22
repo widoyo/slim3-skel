@@ -14,11 +14,37 @@
       <div class="container">
     <div class="row align-items-center g-lg-5 py-5">
         <div class="col-lg-7 text-center text-lg-start">
-          <h1 class="display-4 fw-bold lh-1 mb-3">prinus here...</h1>
-          <p class="col-lg-10 fs-4">Giving you best of Hidrological Telemetri System.</p>
+          <h1 class="display-4 fw-bold lh-1 mb-3">prinus</h1>
+          <p class="col-lg-10 fs-4">Telemetri System.</p>
         </div>
         <div class="col-md-10 mx-auto col-lg-5">
-          <form method="POST" action="/login" class="p-4 p-md-5 border rounded-3 bg-light">
+          {% if flash('errors') %}
+          <div class="alert alert-danger alert-dismissible fade show">
+              <h3 class="h5 font-weight-bold">Error</h3>
+              <ul class="mb-0">
+                  {% for err in flash('errors') %}
+                      <li>{{ err }}</li>
+                  {% endfor %}
+              </ul>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          {% endif %}
+                    {% if flash('messages') %}
+          <div class="alert alert-info alert-dismissible fade show">
+              <h3 class="h5 font-weight-bold">Info</h3>
+              <ul class="mb-0">
+                  {% for msg in flash('messages') %}
+                      <li>{{ msg }}</li>
+                  {% endfor %}
+              </ul>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          {% endif %}
+                    <form method="POST" action="/login" class="p-4 p-md-5 border rounded-3 bg-light">
             <input type="hidden" name="next" value="{{ next }}">
             <div class="form-floating mb-3">
               <input type="text" name="username" class="form-control" id="floatingInput" placeholder="username" style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAAXNSR0IArs4c6QAAAPhJREFUOBHlU70KgzAQPlMhEvoQTg6OPoOjT+JWOnRqkUKHgqWP4OQbOPokTk6OTkVULNSLVc62oJmbIdzd95NcuGjX2/3YVI/Ts+t0WLE2ut5xsQ0O+90F6UxFjAI8qNcEGONia08e6MNONYwCS7EQAizLmtGUDEzTBNd1fxsYhjEBnHPQNG3KKTYV34F8ec/zwHEciOMYyrIE3/ehKAqIoggo9inGXKmFXwbyBkmSQJqmUNe15IRhCG3byphitm1/eUzDM4qR0TTNjEixGdAnSi3keS5vSk2UDKqqgizLqB4YzvassiKhGtZ/jDMtLOnHz7TE+yf8BaDZXA509yeBAAAAAElFTkSuQmCC&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%;">
@@ -32,7 +58,7 @@
             </div>
             <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
             <hr class="my-4">
-            <small class="text-muted">By clicking Sign up, you agree to the terms of use.</small>
+            <small class="text-muted"></small>
           </form>
         </div>
       </div>

@@ -6,9 +6,15 @@
     <div class="col">
       <h2>Pos</h2>
       <div>Filter</div>
-      {% for l in user.sn %}
-{{ l }}
-{% endfor %}
+<ol>
+  {% for l in logger %}
+  <li>
+    {{ l.device }} &nbsp;
+    {{ l.sampling }}
+  </li>
+  {% endfor %}
+  
+</ol>
 
     </div>
     <div class="col">

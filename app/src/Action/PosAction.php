@@ -7,7 +7,7 @@ use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class DeviceAction
+final class PosAction
 {
     private $view;
     private $logger;
@@ -25,7 +25,7 @@ final class DeviceAction
     public function _all()
     {
         $tenant_id = $this->c['session']['user']['tenant']['id'];
-        $sql = "SELECT * FROM logger WHERE tenant_id=:tenant_id ORDER BY sn";
+        $sql = "SELECT * FROM location WHERE tenant_id=:tenant_id ORDER BY nama";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([":tenant_id" => $tenant_id]);
         return $stmt->fetchall();
@@ -34,26 +34,15 @@ final class DeviceAction
     public function index($request, $response, $args)
     {
         
-        return $this->view->render($response, 'device/index.html', ['logger' => $this->_all()]);
+        return $this->view->render($response, 'pos/index.html', ['poses' => $this->_all()]);
     }
 
     public function show($request, $response, $args)
     {
-        if (! in_array($args['sn'], $this->c['session']['user']['sn'])) {
-            return $response->withStatus(404);
-        }
-        return $this->view->render($response, 'device/show.html', ['sn' => $args['sn']]);
-    }
-
-    public function add($request, $response, $args)
-    {
-        if ($request->isPost()) {
-            $body = $response->getBody();
-            $body->write('Hello');
-            return 1;
-        }
-        return $this->view->render($response, 'device/add.html', ['sn' => $args['sn']]);
-
+        $sql = "SELECT * FROM location WHERE id=:id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([":id" => $args['id']]);
+        return $this->view->render($response, 'pos/show.html', ['id' => $args['id']]);
     }
 
 }

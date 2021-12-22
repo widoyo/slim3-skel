@@ -13,13 +13,38 @@ return function(App $app) {
         }
         else if ($this->session->user['tenant'])
         {
-            $sql = "SELECT sn FROM logger WHERE ";
-            $this->logger->debug('tenant_id' . $this->session->user['tenant']['nama']);
-            return $this->view->render($response, 'home_tenant.html');
+            // User tenant: homepage tampil hujan hari ini, tma terakhir
+            $sns = "";
+            foreach ($this->session->user['sn'] as $s) {
+                $sns .= "'" . $s . "',";
+            }
+            $sql = "SELECT to_timestamp(MAX(content->>'sampling')::bigint) as sampling, "
+                . "content->>'device' AS device "
+                . "FROM raw WHERE sn IN (".substr($sns, 0, strlen($sns) -1).") "
+                . "GROUP BY content->>'device' "
+                . "ORDER BY sampling DESC";
+            //$this->logger->debug($sns);
+//            $sns = implode(",", $this->session->user['sn']);
+            $stmt = $this->db->prepare("SELECT COUNT(*) FROM location");
+            $stmt->execute();
+            //$this->logger->debug('tenant_id' . $this->session->user['tenant']['nama']);
+            return $this->view->render($response, 'home_tenant.html', ['logger' => $stmt->fetchall()]);
         }
         else
         {
-            return $this->view->render($response, 'home_owner.html');
+            $sns = "";
+            foreach ($this->session->user['sn'] as $s) {
+                $sns .= "'" . $s . "',";
+            }
+            $sql = "SELECT to_timestamp(MAX(content->>'sampling')::bigint) as sampling, "
+                . "content->>'device' AS device "
+                . "FROM raw WHERE sn IN (".substr($sns, 0, strlen($sns) -1).") "
+                . "GROUP BY content->>'device' "
+                . "ORDER BY sampling DESC";
+            //$this->logger->debug($sql);
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $this->view->render($response, 'home_owner.html', ['logger' => $stmt->fetchall()]);
         }
         
     })->setName('homepage');
@@ -31,9 +56,20 @@ return function(App $app) {
     
     $app->group('/logger', function ($app) {
         $app->get('', App\Action\DeviceAction::class . ':index');
+        $app->get('/add', App\Action\DeviceAction::class . ':add');
+        $app->post('/add', App\Action\DeviceAction::class . ':add');
         $app->get('/{sn}', App\Action\DeviceAction::class . ':show');
     });
     
+    $app->group('/das', function ($app) {
+        $app->get('', App\Action\DasAction::class .':index');
+    });
+
+    $app->group('/pos', function ($app) {
+        $app->get('', App\Action\PosAction::class .':index')->setName('pos_index');
+        $app->get('/{id}', App\Action\PosAction::class . ':show')->setName('pos_show');
+    });
+
     $app->group('/tenant', function ($app) {
         $app->get('', App\Action\TenantAction::class . ':index');
     });
@@ -65,7 +101,7 @@ return function(App $app) {
                 $stmt = $this->db->prepare("SELECT id,nama,slug FROM tenant WHERE id=:id");
                 $stmt->execute([":id" => $user['tenant_id']]);
                 $tenant = $stmt->fetch();
-    
+
                 $stmt = $this->db->prepare("SELECT sn FROM logger WHERE tenant_id=:id");
                 $stmt->execute([":id" => $user['tenant_id']]);
                 $sn = array();
@@ -74,7 +110,9 @@ return function(App $app) {
                     array_push($sn, $s['sn']);
                 }
             } else {
-                $stmt = $this->db->prepare("SELECT sn FROM logger");
+    
+                $sql = "SELECT sn FROM logger";
+                $stmt = $this->db->prepare($sql);
                 $stmt->execute();
                 $sn = array();
                 foreach($stmt->fetchall() as $s) 
@@ -91,7 +129,8 @@ return function(App $app) {
         }
         else
         {
-            return $this->view->render($response, 'login.html', ['error' => 'user keliru', 'next' => '/']);
+            $this->flash->addMessage("errors", "Username atau Password keliru");
+            return $this->view->render($response, 'login.html', ['next' => '/']);
         }
     
     });

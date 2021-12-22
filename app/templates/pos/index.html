@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>Pos Pengamatan</h2>
+            <ol>
+                {% for p in poses %}
+                <li><a href="">{{ p.nama }}</a></li>
+                {% else %}
+                <p>Masih kosong</p>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

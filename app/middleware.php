@@ -7,9 +7,9 @@ return function(App $app) {
     // Hoster only 
     $app->add(function ($request, $response, $next) {
         $uri = $request->getUri();
-        $opened = array('/tenant', '/user');
+        $opened = array('/tenant', '/user', '/logger/add');
         if (in_array($uri->getPath(), $opened)) {
-            if (is_array($this->session->user['tenant'])) {
+            if ($this->session->user['tenant']) {
                 $new_response = $response->withStatus(403);
                 return $this->view->render($new_response, '403.html');
             }
